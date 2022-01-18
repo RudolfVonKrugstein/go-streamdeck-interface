@@ -3,7 +3,7 @@ package button_image
 import (
 	"bytes"
 	"errors"
-	"go-streamdeck-interface/devices"
+	"github.com/RudolfVonKrugstein/go-streamdeck-interface/devices"
 	"golang.org/x/image/bmp"
 	"image"
 	"image/color"
@@ -28,7 +28,7 @@ func NewButtonImage(di devices.DeviceInfo, img image.Image) (*ButtonImage, error
 	case devices.BMP:
 		bmp.Encode(&b, img)
 	default:
-		return nil, errors.New("unknown button image format" )
+		return nil, errors.New("unknown button image format")
 	}
 	return &ButtonImage{b.Bytes()}, nil
 }

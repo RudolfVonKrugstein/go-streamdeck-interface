@@ -3,16 +3,15 @@ package client
 import (
 	"errors"
 	"fmt"
+	"github.com/RudolfVonKrugstein/go-streamdeck-interface/button_image"
+	"github.com/RudolfVonKrugstein/go-streamdeck-interface/devices"
 	"github.com/karalabe/hid"
-	"go-streamdeck-interface/button_image"
-	"go-streamdeck-interface/devices"
 )
-
 
 const vendorID = 0x0fd9
 
 type Client struct {
-	fd *hid.Device
+	fd         *hid.Device
 	deviceInfo devices.DeviceInfo
 	buttonDown []bool
 }
@@ -65,7 +64,7 @@ func (c *Client) ResetComms() error {
 	return nil
 }
 
-func (c* Client) WriteButtonImage(btnIndex uint, i* button_image.ButtonImage) error {
+func (c *Client) WriteButtonImage(btnIndex uint, i *button_image.ButtonImage) error {
 	if btnIndex >= c.deviceInfo.GetDeviceInfoData().GetTotalNumButtons() {
 		return errors.New(fmt.Sprintf("Invalid key index: %d", btnIndex))
 	}
@@ -105,7 +104,7 @@ func (c* Client) WriteButtonImage(btnIndex uint, i* button_image.ButtonImage) er
 
 // SetBrightness sets the button brightness
 // pct is an integer between 0-100
-func (c* Client) SetBrightness(pct int) error {
+func (c *Client) SetBrightness(pct int) error {
 	if pct < 0 {
 		pct = 0
 	}
@@ -122,7 +121,7 @@ func (c* Client) SetBrightness(pct int) error {
 	return nil
 }
 
-func (c* Client) ReadNextButtonEvents() (downButtons []uint, upButtons []uint, err error) {
+func (c *Client) ReadNextButtonEvents() (downButtons []uint, upButtons []uint, err error) {
 	for {
 		did := c.deviceInfo.GetDeviceInfoData()
 		data := make([]byte, did.GetTotalNumButtons()+did.ButtonReadOffset)
@@ -130,12 +129,12 @@ func (c* Client) ReadNextButtonEvents() (downButtons []uint, upButtons []uint, e
 		if err != nil {
 			return
 		}
-		for i := uint(0); i <did.GetTotalNumButtons(); i++ {
+		for i := uint(0); i < did.GetTotalNumButtons(); i++ {
 			if data[did.ButtonReadOffset+i] == 1 {
 				if !c.buttonDown[i] {
 					downButtons = append(downButtons, i)
 				}
-				c.buttonDown[i]= true
+				c.buttonDown[i] = true
 			} else {
 				if c.buttonDown[i] {
 					upButtons = append(upButtons, i)
@@ -147,7 +146,7 @@ func (c* Client) ReadNextButtonEvents() (downButtons []uint, upButtons []uint, e
 }
 
 type ButtonEvent struct {
-	Id uint
+	Id   uint
 	Down bool
 }
 
@@ -163,13 +162,13 @@ func (c *Client) ButtonEventsChannel() (chan ButtonEvent, chan error) {
 				return
 			}
 			for _, event := range downEvents {
-				eventChannel <- ButtonEvent {
+				eventChannel <- ButtonEvent{
 					event,
 					true,
 				}
 			}
 			for _, event := range upEvents {
-				eventChannel <- ButtonEvent {
+				eventChannel <- ButtonEvent{
 					event,
 					false,
 				}
