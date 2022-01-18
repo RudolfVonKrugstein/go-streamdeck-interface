@@ -1,4 +1,4 @@
-module go-streamdeck-interface
+module github.com/RudolfVonKrugstein/go-streamdeck-interface
 
 go 1.15
 
